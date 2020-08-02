@@ -2,14 +2,14 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import ProductsList from "../components/ProductsListComponent/ProductsList";
 import OrdersPage from "../components/OredersComponent/OrdersPage";
-import IncomePage from "../components/IncomPageComponent/IncomePage";
-import OutcomingOrdersPage from "../components/OutcomingOrdesrComponent/OutcomingOrdersPage";
+import IncomePage from "../components/ProfutPageComponent/ProfitComponent";
+import OutcomingOrdersPage from "../components/OutcomingOrdesrComponent/СonsumptionComponent";
 
 Vue.use(VueRouter);
 
 const routes = [
     {
-        path: '/main',
+        path: '/product-list',
         name: 'ProductList',
         component: ProductsList,
     },
@@ -19,12 +19,12 @@ const routes = [
         component: OrdersPage
     },
     {
-      path: '/income',
+      path: '/profit',
       name: 'IncomePage',
       component: IncomePage,
     },
     {
-      path: 'outcome',
+      path: '/consumption',
       name: 'OutcomePage',
       component: OutcomingOrdersPage
     },
