@@ -5,23 +5,26 @@
             <li class="nav-item">
               <router-link class="nav-link active"
                  to="/product-list">
+                <b-icon icon="basket3"></b-icon>
                 Продукты
               </router-link>
             </li>
             <li class="nav-item">
               <router-link class="nav-link link"
                  to="/profit">
-                Прибыль
+                <b-icon icon="box-arrow-up"></b-icon>
+                Приход
               </router-link>
             </li><li class="nav-item">
             <router-link class="nav-link link"
                to="/consumption">
+              <b-icon icon="box-arrow-down"></b-icon>
               Расход
             </router-link>
           </li><li class="nav-item">
             <router-link class="nav-link link"
                to="/order">
-                <polyline points="13 2 13 9 20 9"></polyline></svg>
+              <b-icon icon="blockquote-right"></b-icon>
               Заказ
             </router-link>
           </li>

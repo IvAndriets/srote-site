@@ -2,26 +2,21 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue';
-import VueRouter from 'vue-router';
-import Menu from '@/components/MenuComponent/Menu';
-import Filter from '@/components/FilterComponent/Filter';
+import {BootstrapVue, IconsPlugin} from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import MenuComponent from "./components/MenuComponent/MenuComponent";
+import FilterComponent from "./components/FilterComponent/FilterComponent";
+import ActionBurComponent from "./components/ActionBurComponent/ActionBurComponent";
+import TopMenuComponent from "./components/MenuComponent/TopMenuComponent";
 
-
-
-Vue.config.productionTip = false;
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
-
-Vue.component('SideBarMenu', Menu);
-Vue.component('filter-atr', Filter);
 
 Vue.config.productionTip = false;
 
 new Vue({
   router,
   store,
-  render: function (h) { return h(App) }
+  render: (h) => h(App),
 }).$mount('#app');
