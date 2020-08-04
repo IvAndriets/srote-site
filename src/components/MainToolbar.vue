@@ -13,7 +13,7 @@
 
 <script>
   export default {
-    name: "TopMenuComponent"
+    name: "MainToolbar"
   }
 </script>
 

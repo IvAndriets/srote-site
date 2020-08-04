@@ -22,8 +22,9 @@
 </template>
 
 <script>
-  import ActionBurComponent from '../ActionBurComponent/ActionBurComponent';
-  import FilterComponent from '../FilterComponent/FilterComponent';
+  import ProductsFilter from './components/Filter/ProductsFilter';
+  import ProductListActionBar from './components/ProductsAcrionBar/ProductsListActionBar';
+  import ProductDetails from './ProductDetails';
 
   export default {
     name: 'ProductsList',
@@ -36,8 +37,9 @@
       }
     },
     components: {
-      'filter-products': FilterComponent,
-      'product-list-action-bar': ActionBurComponent,
+      'filter-products': ProductsFilter,
+      'product-list-action-bar': ProductListActionBar,
+      'product-details': ProductDetails,
     },
   };
 </script>

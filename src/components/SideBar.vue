@@ -4,7 +4,7 @@
           <ul class="nav flex-column">
             <li class="nav-item">
               <router-link class="nav-link active"
-                 to="/product-list">
+                 to="/products">
                 <b-icon icon="basket3"></b-icon>
                 Продукты
               </router-link>
@@ -35,7 +35,7 @@
 
 <script>
   export default {
-    name: 'Menu',
+    name: 'SideBar',
   };
 </script>
 

@@ -19,7 +19,7 @@
 
 <script>
   export default {
-    name: 'ProductDetailsComponent',
+    name: 'ProductDetails',
     data: () => ({
       product: {
         title: '',
@@ -29,10 +29,10 @@
     methods: {
       addToList(product) {
         this.$store.dispatch('addProduct', product);
-        this.$router.push('/product-list')
+        this.$router.push('/products')
       },
       cancelMethod() {
-        this.$router.push('/product-list')
+        this.$router.push('/products')
       }
     },
   }

@@ -1,19 +1,23 @@
 import Vue from 'vue'
+import VueRouter from 'vue-router';
 import App from './App.vue'
-import router from './router'
+import {routes} from './router'
 import store from './store'
 import {BootstrapVue, IconsPlugin} from 'bootstrap-vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import MenuComponent from "./components/MenuComponent/MenuComponent";
-import FilterComponent from "./components/FilterComponent/FilterComponent";
-import ActionBurComponent from "./components/ActionBurComponent/ActionBurComponent";
-import TopMenuComponent from "./components/MenuComponent/TopMenuComponent";
 
+Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
 Vue.config.productionTip = false;
+
+const router = new VueRouter({
+  mode: 'history',
+  // base: process.env.BASE_URL,
+  routes,
+});
 
 new Vue({
   router,

@@ -19,7 +19,7 @@
 
 <script>
   export default {
-    name: 'FilterComponent',
+    name: 'ProductsFilter',
     data: () => ({
       filterValue1: true,
       filterValue2: true,

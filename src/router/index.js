@@ -1,27 +1,19 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import ProductsList from "../components/Products/ProductsListComponent";
-import ProductDetailsComponent from "../components/Products/ProductDetailsComponent";
+import ProductDetails from '../components/Products/ProductDetails';
+import ProductsList from '../components/Products/ProductsList';
 
-Vue.use(VueRouter);
-
-const routes = [
+export const routes = [
   {
-    path: '/product-list',
-    name: 'ProductList',
+    path: '/products',
     component: ProductsList,
+    children: [{
+      path: 'new',
+      name: 'ProductDetails',
+      component: ProductDetails,
+    }],
   },
-  {
-    path: '/new-product',
-    name: 'AddProductComponent',
-    component: ProductDetailsComponent,
-  },
+  // {
+  //   // path: '/products/new',
+  //   // name: 'ProductDetails',
+  //   // component: ProductDetails,
+  // },
 ];
-
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes,
-});
-
-export default router;
