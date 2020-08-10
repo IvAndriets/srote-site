@@ -1,12 +1,9 @@
 <template>
   <b-container>
-    <b-button :to="{path:'/products/new'}">
+    <b-button to="./add" append>
       Add
       <b-icon icon="plus"></b-icon>
     </b-button>
-    <router-link :to="{ name: 'newProduct' }"
-                 class="nav-link">Staff
-    </router-link>
   </b-container>
 </template>
 

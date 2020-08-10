@@ -1,14 +1,14 @@
 <template>
-  <main-component></main-component>
+  <main-container>
+  </main-container>
 </template>
 
 <script>
   import MainContainer from './components/MainContainer';
-  import ProductDetails from './components/Products/ProductDetails';
 
   export default {
     components: {
-      'main-component': MainContainer,
+      'main-container': MainContainer,
     },
     name: 'App',
     computed: {},

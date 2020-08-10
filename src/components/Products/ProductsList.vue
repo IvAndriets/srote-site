@@ -10,11 +10,18 @@
           <b-th>Description</b-th>
         </b-tr>
       </b-thead>
-      <b-tbody v-for="product in SHOW_PRODUCTS"
+      <b-tbody v-for="product in PRODUCTS"
                :key="product.id">
         <b-tr>
-          <b-td>{{product.title}}</b-td>
-          <b-td>{{product.description}}</b-td>
+          <b-td>
+            <router-link :to="{path:`./${product.id}`}"
+                         append>
+              {{product.title}}
+            </router-link>
+          </b-td>
+          <b-td>
+            {{product.description}}
+          </b-td>
         </b-tr>
       </b-tbody>
     </b-table-simple>
@@ -24,13 +31,14 @@
 <script>
   import ProductsFilter from './components/Filter/ProductsFilter';
   import ProductListActionBar from './components/ProductsAcrionBar/ProductsListActionBar';
-  import ProductDetails from './ProductDetails';
 
   export default {
     name: 'ProductsList',
-    data: () => ({}),
+    data: () => ({
+      productsList: [],
+    }),
     computed: {
-      SHOW_PRODUCTS: {
+      PRODUCTS: {
         get() {
           return this.$store.getters.GET_PRODUCTS_LIST;
         }
@@ -39,7 +47,9 @@
     components: {
       'filter-products': ProductsFilter,
       'product-list-action-bar': ProductListActionBar,
-      'product-details': ProductDetails,
+    },
+    created() {
+      this.$store.dispatch('getProducts');
     },
   };
 </script>

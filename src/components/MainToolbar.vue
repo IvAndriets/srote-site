@@ -1,19 +1,22 @@
 <template>
-    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
-        <a class="navbar-brand col-sm-3 col-md-2 mr-0"
-           href="#">Shop name</a>
-        <ul class="navbar-nav px-3">
-            <li class="nav-item text-nowrap">
-                <a class="nav-link"
-                   href="#">Sign in</a>
-            </li>
-        </ul>
-    </nav>
+  <b-navbar class="navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+    <b-navbar-brand to="/home"
+                    class="col-sm-3 col-md-2 mr-0">
+      Products Catalog
+    </b-navbar-brand>
+    <b-navbar-nav class="px-3">
+      <b-nav-item class="text-nowrap">
+        <router-link to="/products"
+                     class="nav-link">Admin
+        </router-link>
+      </b-nav-item>
+    </b-navbar-nav>
+  </b-navbar>
 </template>
 
 <script>
   export default {
-    name: "MainToolbar"
+    name: 'MainToolbar'
   }
 </script>
 
