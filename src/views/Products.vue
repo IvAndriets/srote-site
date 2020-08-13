@@ -1,7 +1,11 @@
 <template>
-  <b-row>
-    <side-bar></side-bar>
-    <router-view></router-view>
+  <b-row no-gutters>
+    <b-col cols="2">
+      <side-bar></side-bar>
+    </b-col>
+    <b-col cols="10" class="main-container-height">
+      <router-view></router-view>
+    </b-col>
   </b-row>
 </template>
 
@@ -17,5 +21,7 @@
 </script>
 
 <style scoped>
-
+  .main-container-height{
+    height: 1600px;
+  }
 </style>

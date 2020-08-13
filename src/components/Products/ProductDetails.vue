@@ -1,83 +1,83 @@
 <template>
   <b-container>
+
     <status-container v-bind:status="STATUS">
       <template v-slot:rendered>
-        <div v-if="isNewProduct">
+          <div v-if="isNewProduct">
 
-          <div>
-            <h3>New product</h3>
+            <div>
+              <h3>New product</h3>
+            </div>
+
+            <b-form @submit.prevent="createProduct(form)">
+              <b-form-group label="Products name"
+                            label-for="title-input">
+                <b-form-input id="title-input"
+                              v-model="form.title"
+                              required>
+
+                </b-form-input>
+              </b-form-group>
+
+              <b-form-group label="Products description"
+                            label-for="description-input">
+                <b-form-input id="description-input"
+                              v-model="form.description"
+                              required>
+                </b-form-input>
+              </b-form-group>
+
+              <b-button type="submit">Save</b-button>
+              <b-button to="../"
+                        append>Cancel
+              </b-button>
+
+            </b-form>
+
           </div>
+          <div v-else>
 
-          <b-form @submit.prevent="createProduct(form)">
-            <b-form-group label="Products name"
-                          label-for="title-input">
-              <b-form-input id="title-input"
-                            v-model="form.title"
-                            required>
+            <div>
+              <h3>Product Details</h3>
+            </div>
 
-              </b-form-input>
-            </b-form-group>
+            <b-form @submit.prevent="updateProduct(form)">
+              <b-form-group label="Products name"
+                            label-for="title-input">
+                <b-form-input id="title-input"
+                              v-model="form.title"
+                              required>
+                </b-form-input>
+              </b-form-group>
 
-            <b-form-group label="Products description"
-                          label-for="description-input">
-              <b-form-input id="description-input"
-                            v-model="form.description"
-                            required>
-              </b-form-input>
-            </b-form-group>
+              <b-form-group label="Products description"
+                            label-for="description-input">
+                <b-form-input id="description-input"
+                              v-model="form.description"
+                              required>
+                </b-form-input>
+              </b-form-group>
 
-            <b-button type="submit">Save</b-button>
-            <b-button to="../"
-                      append>Cancel</b-button>
+              <b-button type="submit">Commit</b-button>
+              <b-button @click="deleteProduct">Delete</b-button>
+              <b-button to="../" append>Back</b-button>
+            </b-form>
 
-          </b-form>
-
-        </div>
-        <div v-else>
-
-          <div>
-            <h3>Product Details</h3>
           </div>
-
-          <b-form @submit="updateProduct">
-            <b-form-group label="Products name"
-                          label-for="title-input">
-              <b-form-input id="title-input"
-                            v-model="form.title"
-                            required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-form-group label="Products description"
-                          label-for="description-input">
-              <b-form-input id="description-input"
-                            v-model="form.description"
-                            required>
-              </b-form-input>
-            </b-form-group>
-
-            <b-button type="submit">Commit</b-button>
-            <b-button to="../" append>Back</b-button>
-          </b-form>
-          <half-circle-spinner
-            :animation-duration="1000"
-            :size="60"
-            color="#ff1d5e"
-          />
-        </div>
       </template>
     </status-container>
+
+
 
   </b-container>
 </template>
 
 <script>
   import StatusContainer from '../StatusContainer';
-  import { HalfCircleSpinner } from 'epic-spinners'
 
   export default {
     name: 'ProductDetails',
-    components: {StatusContainer,'half-circle-spinner': HalfCircleSpinner},
+    components: {StatusContainer},
     data: () => ({
       form: {
         title: '',
@@ -111,6 +111,9 @@
       updateProduct(product) {
         this.$store.dispatch('putProduct', product);
       },
+      deleteProduct(){
+        this.$store.dispatch('deleteProduct', this.$props.id)
+      }
     },
     computed: {
       STATUS: {
@@ -125,8 +128,8 @@
       }
     },
     watch: {
-      STATUS1(newValue, oldValue) {
-        if (newValue.loaded) {
+      STATUS(newValue, oldValue) {
+        if (newValue.loaded && !this.isNewProduct) {
           this.form = {...this.PRODUCT};
         }
       },
