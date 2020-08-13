@@ -6,7 +6,7 @@
     </b-navbar-brand>
     <b-navbar-nav class="px-3">
       <b-nav-item class="text-nowrap">
-        <router-link to="/products?page=1&limit=5"
+        <router-link to="/products"
                      class="nav-link">Admin
         </router-link>
       </b-nav-item>

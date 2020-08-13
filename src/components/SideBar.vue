@@ -4,7 +4,7 @@
       <ul class="nav">
         <li class="nav-item">
           <router-link class="nav-link active"
-                       to="/products?page=1&limit=5">
+                       to="/products">
             <b-icon icon="basket3"></b-icon>
             Продукты
           </router-link>

@@ -25,17 +25,25 @@
                       outlined>
         <b-thead>
           <b-tr>
-            <b-th @click="changeSortDirection('titleArrow')">Title
-              <b-icon v-if="SORT_ARROWS.titleArrow"
-                      icon="arrow-up"></b-icon>
-              <b-icon v-else
-                      icon="arrow-down"></b-icon>
+            <b-th @click="sortColumn('title')"
+                  class="">Title
+              <div v-if="SORT_FIELD === 'title'"
+                   @click="sortDirection">
+                <b-icon v-if="SORT_DIRECTION === 'asc'"
+                        icon="arrow-up"></b-icon>
+                <b-icon v-else
+                        icon="arrow-down"></b-icon>
+              </div>
             </b-th>
-            <b-th @click="changeSortDirection('descriptionArrow')">Description
-              <b-icon v-if="SORT_ARROWS.descriptionArrow"
-                      icon="arrow-up"></b-icon>
-              <b-icon v-else
-                      icon="arrow-down"></b-icon>
+            <b-th @click="sortColumn('description')"
+                  class="">Description
+              <div v-if="SORT_FIELD === 'description'"
+                   @click="sortDirection">
+                <b-icon v-if="SORT_DIRECTION === 'asc'"
+                        icon="arrow-up"></b-icon>
+                <b-icon v-else
+                        icon="arrow-down"></b-icon>
+              </div>
             </b-th>
             <b-th></b-th>
           </b-tr>
@@ -111,11 +119,11 @@
           return this.$store.getters.GET_LIMITS;
         },
       },
-      SORT_ARROWS: {
-        get() {
-          return this.$store.getters.GET_SORT_ARROWS;
-        }
-      },
+      // SORT_ARROWS: {
+      //   get() {
+      //     return this.$store.getters.GET_SORT_ARROWS;
+      //   }
+      // },
       SORT_FIELD: {
         get() {
           return this.$store.getters.GET_SORT_FIELD;
@@ -140,14 +148,9 @@
 
     },
     mounted() {
-      console.log(this.$route.query.sortField, '@@@@', this.$route.query.sort);
-
-      if (this.$route.query.sortField && this.$route.query.sort) {
-        this.SORT_FIELD = this.$route.query.sortField;
-        this.SORT_DIRECTION = this.$route.query.sort;
-        console.log(this.SORT_FIELD, this.SORT_DIRECTION)
-      }
       const page = +this.$route.query.page || 1;
+      this.SORT_FIELD = this.$route.query.sortField || '';
+      this.SORT_DIRECTION = this.$route.query.sort || '';
       this.$store.commit('SET_LIMIT', +this.$route.query.limit);
 
       setTimeout(() => {
@@ -162,34 +165,49 @@
         this.$router.replace({query: {page: page, limit: this.LIMITS}}).catch(() => {
         });
       },
-      changeSortDirection(id) {
-        console.log('###', id);
-        if (id === 'titleArrow') {
-          if (this.SORT_ARROWS.titleArrow) {
-            this.$store.commit('SET_TITLE_ARROW', {value: false, direction: 'aesc'})
-          } else {
-            this.$store.commit('SET_TITLE_ARROW', {value: true, direction: 'desc'})
-          }
-        } else if (id === 'descriptionArrow') {
-          if (this.SORT_ARROWS.descriptionArrow) {
-            this.$store.commit('SET_DESCRIPTION_ARROW', {value: false, direction: 'aesc'})
-          } else {
-            this.$store.commit('SET_DESCRIPTION_ARROW', {value: true, direction: 'desc'})
-          }
+      sortColumn(column) {
+        if (this.SORT_FIELD !== column) {
+          this.SORT_FIELD = column;
+          this.SORT_DIRECTION = 'asc';
+          this.$store.dispatch('getProducts', {offset: null, limit: null});
+          this.$router.replace({
+            query: {
+              page: this.PAGE,
+              limit: this.LIMITS,
+              sortField: this.SORT_FIELD,
+              sort: this.SORT_DIRECTION
+            }
+          }).catch(() => {
+          })
         }
-        this.$store.dispatch('getProducts', {offset: 0, limit: this.LIMITS});
-        this.$router.replace({
-          query: {
-            page: 1,
-            limit: this.LIMITS,
-            sortField: this.SORT_FIELD,
-            sort: this.SORT_DIRECTION
-          }
-        }).catch(() => {
-        });
-        this.PAGE = 1;
+      },
+      sortDirection() {
+        if (this.SORT_DIRECTION === 'asc') {
+          this.SORT_DIRECTION = 'desc';
+          this.$store.dispatch('getProducts', {offset: 0, limit: this.LIMITS});
+          this.$router.replace({
+            query: {
+              page: this.PAGE,
+              limit: this.LIMITS,
+              sortField: this.SORT_FIELD,
+              sort: this.SORT_DIRECTION
+            }
+          }).catch(() => {
+          })
 
-        console.log(this.SORT_ARROWS)
+        } else {
+          this.SORT_DIRECTION = 'asc';
+          this.$store.dispatch('getProducts', {offset: 0, limit: this.LIMITS});
+          this.$router.replace({
+            query: {
+              page: this.PAGE,
+              limit: this.LIMITS,
+              sortField: this.SORT_FIELD,
+              sort: this.SORT_DIRECTION
+            }
+          }).catch(() => {
+          })
+        }
       }
     },
     watch: {

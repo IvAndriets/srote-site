@@ -27,12 +27,8 @@ const products = {
     rowsNumber: 0,
     pageLimit: 5,
     currentPage: 1,
-    sortArrows: {
-      titleArrow: false,
-      descriptionArrow: false,
-    },
     sortField: 'title',
-    sortDirection: 'aesc',
+    sortDirection: 'asc',
   },
   getters: {
     'GET_PRODUCTS_LIST': state => {
@@ -52,9 +48,6 @@ const products = {
     },
     GET_LIMITS: state => {
       return state.pageLimit || 5;
-    },
-    GET_SORT_ARROWS: state => {
-      return state.sortArrows;
     },
     GET_SORT_FIELD: state => {
       return state.sortField;
@@ -108,26 +101,10 @@ const products = {
     SET_PAGE: (state, payload) => {
       state.currentPage = payload
     },
-    SET_TITLE_ARROW: (state, payload) => {
-      state.sortArrows = {
-        titleArrow: payload.value,
-        descriptionArrow: false,
-      };
-      state.sortField = 'title';
-      state.sortDirection = payload.direction
-    },
-    SET_DESCRIPTION_ARROW: (state, payload) => {
-      state.sortArrows = {
-        titleArrow: false,
-        descriptionArrow: payload.value,
-      };
-      state.sortField = 'description';
-      state.sortDirection = payload.direction
-    },
     SET_SORT_FIELD: (state, payload) => {
       state.sortField = payload;
     },
-    SET_SORT_DIRECTION: (state, payload) =>{
+    SET_SORT_DIRECTION: (state, payload) => {
       state.sortDirection = payload;
     }
   },
@@ -135,7 +112,14 @@ const products = {
     getProducts: async (context, payload) => {
       context.commit('SET_LOADING');
       try {
-        const {data} = await Axios.get(`${baseUrl}products?offset=${payload.offset}&limit=${payload.limit}&sort_field=${context.state.sortField}&sort=${context.state.sortDirection}`);
+        const {data} = await Axios.get(`${baseUrl}products`, {
+          params: {
+            offset: payload.offset,
+            limit: payload.limit,
+            sort_field: context.state.sortField,
+            sort: context.state.sortDirection,
+          }
+        });
         context.commit('SAVE_PRODUCTS', data.rows);
         context.commit('SET_ROWS_NUMBER', data.count);
         context.commit('SET_LOADED');
