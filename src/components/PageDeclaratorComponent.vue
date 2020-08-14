@@ -1,17 +1,17 @@
 <template>
   <b-container>
-    <slot name="header"></slot>
-    <slot name="filter"></slot>
+    <slot name="header" class="pt-1 pb-1"></slot>
+    <slot name="filter" class="pt-1 pb-1"></slot>
 
-    <b-row>
+    <b-row class="pt-1 pb-1">
       <slot name="toolbar"></slot>
     </b-row>
 
-    <slot name="paginationInfo"></slot>
-    <slot name="body"></slot>
-    <slot name="pagination"></slot>
-    <slot name="actionBar"></slot>
-    <slot name="footer"></slot>
+    <slot name="paginationInfo" class="pt-1 pb-1"></slot>
+    <slot name="body" class="pt-1 pb-1"></slot>
+    <slot name="pagination" class="pt-1 pb-1"></slot>
+    <slot name="actionBar" class="pt-1 pb-1"></slot>
+    <slot name="footer" class="pt-1 pb-1"></slot>
   </b-container>
 </template>
 

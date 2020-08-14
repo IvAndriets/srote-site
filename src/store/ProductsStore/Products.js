@@ -2,6 +2,7 @@ import Axios from 'axios';
 import stringifyRecordValues from 'bootstrap-vue/esm/components/table/helpers/stringify-record-values';
 import {baseUrl} from '../../utils/pathes';
 import {router} from '../../main';
+import {removeFalsyValues} from '../../utils/pathes';
 
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -25,10 +26,10 @@ const products = {
     },
     modalStatus: null,
     rowsNumber: 0,
-    pageLimit: 5,
-    currentPage: 1,
-    sortField: 'title',
-    sortDirection: 'asc',
+    pageLimit: null,
+    currentPage: null,
+    sortField: null,
+    sortDirection: null,
   },
   getters: {
     'GET_PRODUCTS_LIST': state => {
@@ -99,7 +100,7 @@ const products = {
       state.pageLimit = payload;
     },
     SET_PAGE: (state, payload) => {
-      state.currentPage = payload
+      state.currentPage = payload;
     },
     SET_SORT_FIELD: (state, payload) => {
       state.sortField = payload;
@@ -109,17 +110,19 @@ const products = {
     }
   },
   actions: {
-    getProducts: async (context, payload) => {
+    getProducts: async (context) => {
       context.commit('SET_LOADING');
       try {
-        const {data} = await Axios.get(`${baseUrl}products`, {
-          params: {
-            offset: payload.offset,
-            limit: payload.limit,
-            sort_field: context.state.sortField,
-            sort: context.state.sortDirection,
-          }
+
+        const params = removeFalsyValues({
+          offset: ((context.getters.GET_PAGE - 1) * context.getters.GET_LIMITS),
+          limit: context.getters.GET_LIMITS,
+          sort_field: context.getters.GET_SORT_FIELD,
+          sort: context.getters.GET_SORT_DIRECTION,
         });
+
+        const {data} = await Axios.get(`${baseUrl}products`, { params });
+
         context.commit('SAVE_PRODUCTS', data.rows);
         context.commit('SET_ROWS_NUMBER', data.count);
         context.commit('SET_LOADED');

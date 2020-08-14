@@ -17,7 +17,7 @@
     </template>
 
     <template v-slot:paginationInfo>
-      <product-list-action-bar></product-list-action-bar>
+      <product-list-action-bar class="pt-1 pb-1"></product-list-action-bar>
     </template>
 
     <template v-slot:body>
@@ -25,25 +25,27 @@
                       outlined>
         <b-thead>
           <b-tr>
-            <b-th @click="sortColumn('title')"
-                  class="">Title
-              <div v-if="SORT_FIELD === 'title'"
-                   @click="sortDirection">
+            <b-th>
+              <div class="table-column d-inline-flex"
+                   @click="sortColumn('title')">
+                <span>Title</span>
+                <span v-if="SORT_FIELD === 'title'">
                 <b-icon v-if="SORT_DIRECTION === 'asc'"
                         icon="arrow-up"></b-icon>
                 <b-icon v-else
                         icon="arrow-down"></b-icon>
+              </span>
               </div>
             </b-th>
             <b-th @click="sortColumn('description')"
-                  class="">Description
-              <div v-if="SORT_FIELD === 'description'"
-                   @click="sortDirection">
+                  class="table-column">
+              Description
+              <span v-if="SORT_FIELD === 'description'">
                 <b-icon v-if="SORT_DIRECTION === 'asc'"
                         icon="arrow-up"></b-icon>
                 <b-icon v-else
                         icon="arrow-down"></b-icon>
-              </div>
+              </span>
             </b-th>
             <b-th></b-th>
           </b-tr>
@@ -70,7 +72,7 @@
 
     <template v-slot:pagination>
       <b-pagination :value="PAGE"
-                    :total-rows="ROWS"
+                    :total-rows="GET_ROWS_COUNT"
                     :per-page="LIMITS"
                     v-on:change="pageChange">
       </b-pagination>
@@ -84,6 +86,7 @@
   import PageDeclaratorComponent from '../PageDeclaratorComponent';
   import ProductsFilter from './components/Filter/ProductsFilter';
   import ProductListActionBar from './components/ProductsAcrionBar/ProductsListActionBar';
+  import {removeFalsyValues} from '../../utils/pathes';
 
   export default {
     name: 'ProductsList',
@@ -97,7 +100,7 @@
           return this.$store.getters.GET_PRODUCTS_LIST;
         }
       },
-      ROWS: {
+      GET_ROWS_COUNT: {
         get() {
           return this.$store.getters.GET_ROWS_COUNT;
         }
@@ -119,11 +122,6 @@
           return this.$store.getters.GET_LIMITS;
         },
       },
-      // SORT_ARROWS: {
-      //   get() {
-      //     return this.$store.getters.GET_SORT_ARROWS;
-      //   }
-      // },
       SORT_FIELD: {
         get() {
           return this.$store.getters.GET_SORT_FIELD;
@@ -145,10 +143,10 @@
       'product-list-action-bar': ProductListActionBar,
     },
     created() {
-
     },
     mounted() {
       const page = +this.$route.query.page || 1;
+      this.PAGE = page;
       this.SORT_FIELD = this.$route.query.sortField || '';
       this.SORT_DIRECTION = this.$route.query.sort || '';
       this.$store.commit('SET_LIMIT', +this.$route.query.limit);
@@ -157,58 +155,45 @@
         this.PAGE = page;
       }, 500);
 
-      this.$store.dispatch('getProducts', {offset: ((page - 1) * this.LIMITS), limit: this.LIMITS});
+      this.$store.dispatch('getProducts');
     },
     methods: {
       pageChange(page) {
-        this.$store.dispatch('getProducts', {offset: ((page - 1) * this.LIMITS), limit: this.LIMITS});
-        this.$router.replace({query: {page: page, limit: this.LIMITS}}).catch(() => {
+        this.PAGE = page;
+
+        this.$store.dispatch('getProducts');
+        const queryValues = removeFalsyValues({
+          page: this.PAGE,
+          limit: this.LIMITS,
+          sortField: this.SORT_FIELD,
+          sort: this.SORT_DIRECTION
+        });
+        this.$router.replace({query: {...queryValues}}).catch(() => {
         });
       },
       sortColumn(column) {
-        if (this.SORT_FIELD !== column) {
-          this.SORT_FIELD = column;
+        this.SORT_FIELD = column;
+        if (!this.SORT_DIRECTION) {
           this.SORT_DIRECTION = 'asc';
-          this.$store.dispatch('getProducts', {offset: null, limit: null});
-          this.$router.replace({
-            query: {
-              page: this.PAGE,
-              limit: this.LIMITS,
-              sortField: this.SORT_FIELD,
-              sort: this.SORT_DIRECTION
-            }
-          }).catch(() => {
-          })
-        }
-      },
-      sortDirection() {
-        if (this.SORT_DIRECTION === 'asc') {
-          this.SORT_DIRECTION = 'desc';
-          this.$store.dispatch('getProducts', {offset: 0, limit: this.LIMITS});
-          this.$router.replace({
-            query: {
-              page: this.PAGE,
-              limit: this.LIMITS,
-              sortField: this.SORT_FIELD,
-              sort: this.SORT_DIRECTION
-            }
-          }).catch(() => {
-          })
 
+        } else if (this.SORT_DIRECTION === 'asc') {
+          this.SORT_DIRECTION = 'desc';
         } else {
           this.SORT_DIRECTION = 'asc';
-          this.$store.dispatch('getProducts', {offset: 0, limit: this.LIMITS});
-          this.$router.replace({
-            query: {
-              page: this.PAGE,
-              limit: this.LIMITS,
-              sortField: this.SORT_FIELD,
-              sort: this.SORT_DIRECTION
-            }
-          }).catch(() => {
-          })
         }
-      }
+        this.$store.dispatch('getProducts');
+        const queryValues = removeFalsyValues({
+          page: this.PAGE,
+          limit: this.LIMITS,
+          sortField: this.SORT_FIELD,
+          sort: this.SORT_DIRECTION
+        });
+        this.$router.replace({
+          query: {...queryValues}
+        }).catch(() => {
+        })
+      },
+
     },
     watch: {
       LIMITS(newValue) {
@@ -222,5 +207,7 @@
 </script>
 
 <style scoped>
-
+  .table-column {
+    cursor: pointer;
+  }
 </style>

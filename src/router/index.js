@@ -28,11 +28,6 @@ export const routes = [
         component: ProductDetails,
         props: true,
       },
-      {
-        path:'test',
-        component: PageDeclaratorComponent,
-        props: true,
-      }
     ],
   },
   // {
