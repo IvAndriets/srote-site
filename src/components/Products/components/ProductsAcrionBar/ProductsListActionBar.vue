@@ -25,7 +25,7 @@
     computed: {
       LIMITS: {
         get() {
-          return this.$store.getters.GET_LIMITS;
+          return this.$store.getters.GET_LIMITS || 5;
         },
         set(value) {
           this.$store.commit('SET_LIMIT', value);

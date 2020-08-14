@@ -21,6 +21,7 @@ export const routes = [
           limit:5,
           sortField:'title',
           sort:'asc',
+          q: '',
         },
       },
       {

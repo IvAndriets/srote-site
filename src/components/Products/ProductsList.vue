@@ -71,9 +71,9 @@
     </template>
 
     <template v-slot:pagination>
-      <b-pagination :value="PAGE"
+      <b-pagination :value="PAGE || 1"
                     :total-rows="GET_ROWS_COUNT"
-                    :per-page="LIMITS"
+                    :per-page="LIMITS || 5"
                     v-on:change="pageChange">
       </b-pagination>
     </template>
@@ -134,6 +134,11 @@
           return this.$store.getters.GET_SORT_DIRECTION;
         }, set(payload) {
           this.$store.commit('SET_SORT_DIRECTION', payload)
+        },
+        Q_REQUEST: {
+          get() {
+            return this.$store.getters.GET_Q_REQUEST;
+          }
         }
       }
     },
@@ -142,14 +147,14 @@
       'filter-products': ProductsFilter,
       'product-list-action-bar': ProductListActionBar,
     },
-    created() {
-    },
     mounted() {
-      const page = +this.$route.query.page || 1;
+      const page = this.$route.query.page;
+
       this.PAGE = page;
-      this.SORT_FIELD = this.$route.query.sortField || '';
-      this.SORT_DIRECTION = this.$route.query.sort || '';
-      this.$store.commit('SET_LIMIT', +this.$route.query.limit);
+      this.Q_REQUEST = this.$route.query.q;
+      this.SORT_FIELD = this.$route.query.sortField;
+      this.SORT_DIRECTION = this.$route.query.sort;
+      this.$store.commit('SET_LIMIT', this.$route.query.limit ? +this.$route.query.limit : null);
 
       setTimeout(() => {
         this.PAGE = page;
@@ -162,42 +167,36 @@
         this.PAGE = page;
 
         this.$store.dispatch('getProducts');
+
         const queryValues = removeFalsyValues({
           page: this.PAGE,
           limit: this.LIMITS,
           sortField: this.SORT_FIELD,
-          sort: this.SORT_DIRECTION
+          sort: this.SORT_DIRECTION,
+          q: this.Q_REQUEST,
         });
+
         this.$router.replace({query: {...queryValues}}).catch(() => {
         });
       },
       sortColumn(column) {
         this.SORT_FIELD = column;
-        if (!this.SORT_DIRECTION) {
-          this.SORT_DIRECTION = 'asc';
 
-        } else if (this.SORT_DIRECTION === 'asc') {
-          this.SORT_DIRECTION = 'desc';
-        } else {
-          this.SORT_DIRECTION = 'asc';
-        }
-        this.$store.dispatch('getProducts');
-        const queryValues = removeFalsyValues({
-          page: this.PAGE,
-          limit: this.LIMITS,
-          sortField: this.SORT_FIELD,
-          sort: this.SORT_DIRECTION
-        });
-        this.$router.replace({
-          query: {...queryValues}
-        }).catch(() => {
-        })
+        this.SORT_DIRECTION = this.SORT_DIRECTION === 'asc' ? 'desc' : 'asc';
+
+        this.pageChange(this.PAGE);
       },
 
     },
     watch: {
       LIMITS(newValue) {
-        if (newValue !== +this.$route.query.limit) {
+        if (newValue && newValue !== (this.$route.query.limit ? +this.$route.query.limit : null)) {
+          this.PAGE = 1;
+          this.pageChange(this.PAGE);
+        }
+      },
+      Q_REQUEST(newValue) {
+        if (newValue !== this.$route.query.q) {
           this.PAGE = 1;
           this.pageChange(this.PAGE);
         }

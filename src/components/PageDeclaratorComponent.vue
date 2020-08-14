@@ -1,7 +1,12 @@
 <template>
-  <b-container>
-    <slot name="header" class="pt-1 pb-1"></slot>
-    <slot name="filter" class="pt-1 pb-1"></slot>
+  <b-container class="py-3">
+
+    <div v-if="this.$scopedSlots.header"
+         class="py-3">
+      <slot name="header"></slot>
+    </div>
+
+    <slot name="filter"></slot>
 
     <b-row class="pt-1 pb-1">
       <slot name="toolbar"></slot>
@@ -17,7 +22,7 @@
 
 <script>
   export default {
-    name: 'PageDeclaratorComponent'
+    name: 'PageDeclaratorComponent',
   }
 </script>
 

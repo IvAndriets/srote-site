@@ -1,41 +1,38 @@
 <template>
-    <b-form-group lable="TableOption"
-                  label-cols-lg="2"
-                  class="filter-container">
-        <b-form-checkbox v-model="filterValue1">
-            Value 1
-        </b-form-checkbox>
-        <b-form-checkbox v-model="filterValue2">
-            Value 2
-        </b-form-checkbox>
-        <b-form-checkbox v-model="filterValue3">
-            Value 3
-        </b-form-checkbox>
-        <b-form-checkbox v-model="filterValue4">
-            Value 4
-        </b-form-checkbox>
-    </b-form-group>
+  <b-container class="d-flex justify-content-end">
+    <b-input placeholder="Search"
+             class="search-field"
+             v-model="searchValue"></b-input>
+    <b-button @click="search" class="pl-2">Search</b-button>
+  </b-container>
 </template>
 
 <script>
   export default {
     name: 'ProductsFilter',
     data: () => ({
-      filterValue1: true,
-      filterValue2: true,
-      filterValue3: true,
-      filterValue4: true,
+      searchValue: '',
     }),
+    computed: {
+      Q_REQUEST: {
+        get() {
+          return this.$store.getters.GET_Q_REQUEST;
+        }, set(request) {
+          this.$store.commit('SET_Q_REQUEST', request)
+        }
+      },
+    },
     methods: {
-      onShowHide() {
+      search() {
+        console.log(this.searchValue);
+        this.Q_REQUEST = this.searchValue;
       }
-    }
+    },
   };
 </script>
 
 <style scoped>
-    .filter-container {
-        display: flex;
-        justify-content: space-around;
-    }
+  .search-field {
+    width: 200px;
+  }
 </style>

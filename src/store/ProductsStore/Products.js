@@ -1,5 +1,4 @@
 import Axios from 'axios';
-import stringifyRecordValues from 'bootstrap-vue/esm/components/table/helpers/stringify-record-values';
 import {baseUrl} from '../../utils/pathes';
 import {router} from '../../main';
 import {removeFalsyValues} from '../../utils/pathes';
@@ -30,6 +29,7 @@ const products = {
     currentPage: null,
     sortField: null,
     sortDirection: null,
+    qRequest: null,
   },
   getters: {
     'GET_PRODUCTS_LIST': state => {
@@ -48,14 +48,17 @@ const products = {
       return state.currentPage;
     },
     GET_LIMITS: state => {
-      return state.pageLimit || 5;
+      return state.pageLimit;
     },
     GET_SORT_FIELD: state => {
       return state.sortField;
     },
     GET_SORT_DIRECTION: state => {
       return state.sortDirection;
-    }
+    },
+    GET_Q_REQUEST: state => {
+      return state.qRequest;
+    },
   },
   mutations: {
     SAVE_PRODUCTS: (state, payload) => {
@@ -107,7 +110,10 @@ const products = {
     },
     SET_SORT_DIRECTION: (state, payload) => {
       state.sortDirection = payload;
-    }
+    },
+    SET_Q_REQUEST: (state, payload) => {
+      state.qRequest = payload;
+    },
   },
   actions: {
     getProducts: async (context) => {
@@ -119,6 +125,7 @@ const products = {
           limit: context.getters.GET_LIMITS,
           sort_field: context.getters.GET_SORT_FIELD,
           sort: context.getters.GET_SORT_DIRECTION,
+          q: context.getters.GET_Q_REQUEST
         });
 
         const {data} = await Axios.get(`${baseUrl}products`, { params });
