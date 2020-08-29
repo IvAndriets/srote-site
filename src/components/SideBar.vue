@@ -5,8 +5,8 @@
         <li class="nav-item">
           <router-link class="nav-link active"
                        to="/products">
-            <b-icon icon="basket3"></b-icon>
-            Продукты
+            <b-icon icon="folder2"></b-icon>
+            Products
           </router-link>
         </li>
       </ul>

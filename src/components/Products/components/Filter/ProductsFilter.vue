@@ -1,31 +1,60 @@
 <template>
-  <b-container class="d-flex justify-content-end">
-    <b-input placeholder="Search"
-             class="search-field"
-             v-model="searchValue"></b-input>
-    <b-button @click="search" class="pl-2">Search</b-button>
-  </b-container>
+  <div class="d-flex justify-content-end">
+  <span>
+    <b-input-group size="md">
+      <b-form-input placeholder="Search"
+                    class="search-field"
+                    v-model="value"
+                    @keyup.enter="search">
+        </b-form-input>
+      <b-input-group-prepend is-text>
+        <b-icon icon="search"></b-icon>
+      </b-input-group-prepend>
+    </b-input-group>
+  </span>
+  </div>
 </template>
 
 <script>
+  import {removeFalsyValues} from '../../../../utils/pathes';
+
   export default {
     name: 'ProductsFilter',
     data: () => ({
-      searchValue: '',
+      value: '',
     }),
+    mounted() {
+      this.value = this.$route.query.q ? JSON.parse(this.$route.query.q).title['$iLike'].replace(/%/g, '') : '';
+    },
     computed: {
-      Q_REQUEST: {
+      SEARCH_REQUEST: {
         get() {
-          return this.$store.getters.GET_Q_REQUEST;
+          return this.$store.getters.GET_SEARCH_REQUEST;
         }, set(request) {
-          this.$store.commit('SET_Q_REQUEST', request)
+          this.$store.commit('SET_SEARCH_REQUEST', request)
         }
       },
     },
     methods: {
       search() {
-        console.log(this.searchValue);
-        this.Q_REQUEST = this.searchValue;
+        console.log(this.value);
+        const v = this.value ? JSON.stringify({title: {'$iLike': `%${this.value}%`}}) : '';
+        this.SEARCH_REQUEST = v;
+        if (v) {
+          this.$router.push({query: {...this.$route.query, q: v}}).catch(() => {
+          });
+        } else {
+          const queryParams = this.$route.query;
+          const query = removeFalsyValues({
+            page: queryParams.page ? +queryParams.page : null,
+            limit: queryParams.limit ? +queryParams.limit : null,
+            sortField: queryParams.sortField,
+            sort: queryParams.sort,
+          });
+
+          this.$router.push({query: {...query}}).catch(() => {
+          });
+        }
       }
     },
   };

@@ -1,79 +1,106 @@
 <template>
   <b-container>
 
-    <status-container v-bind:status="STATUS">
+    <status-container v-bind:status="{STATUS, name:'notList'}">
       <template v-slot:rendered>
-          <div v-if="isNewProduct">
+        <b-container fluid="sm" v-if="isNewProduct" class="py-2">
 
-            <div>
-              <h3>New product</h3>
-            </div>
+          <b-card>
+            <template v-slot:header>
+              <h3>New Product</h3>
+            </template>
 
-            <b-form @submit.prevent="createProduct(form)">
+            <b-card-body>
               <b-form-group label="Products name"
                             label-for="title-input">
                 <b-form-input id="title-input"
                               v-model="form.title"
-                              required>
+                              required
+                              class="name_input">
 
                 </b-form-input>
               </b-form-group>
-
               <b-form-group label="Products description"
                             label-for="description-input">
-                <b-form-input id="description-input"
-                              v-model="form.description"
-                              required>
-                </b-form-input>
+                <b-form-textarea id="description-input"
+                                 v-model="form.description"
+                                 required
+                                 class="text-width">
+                </b-form-textarea>
               </b-form-group>
+            </b-card-body>
 
-              <b-button type="submit">Save</b-button>
-              <b-button to="../"
-                        append>Cancel
-              </b-button>
+            <template v-slot:footer>
+              <div class="d-flex justify-content-between">
+                <span>
+                  <b-button to="../"
+                            append>Cancel</b-button>
+                </span>
 
-            </b-form>
+                <span>
+                  <b-button @click="createProduct(form)">Save</b-button>
+                </span>
+              </div>
+            </template>
+          </b-card>
 
+        </b-container>
+
+        <b-container fluid="xs" v-else class="py-2">
+          <div class="d-flex justify-content-end py-2">
+                  <span>
+                    <b-button @click="deleteProduct"
+                              variant="danger">Delete <b-icon icon="trash"></b-icon></b-button>
+                  </span>
           </div>
-          <div v-else>
-
-            <div>
+          <b-card>
+            <template v-slot:header>
               <h3>Product Details</h3>
-            </div>
+            </template>
 
-            <b-form @submit.prevent="updateProduct(form)">
+            <b-card-body>
               <b-form-group label="Products name"
                             label-for="title-input">
                 <b-form-input id="title-input"
                               v-model="form.title"
-                              required>
+                              required
+                              class="name_input">
                 </b-form-input>
               </b-form-group>
 
               <b-form-group label="Products description"
                             label-for="description-input">
-                <b-form-input id="description-input"
-                              v-model="form.description"
-                              required>
-                </b-form-input>
+                <b-form-textarea id="description-input"
+                                 v-model="form.description"
+                                 required
+                                 class="text-width">
+                </b-form-textarea>
               </b-form-group>
+            </b-card-body>
 
-              <b-button type="submit">Commit</b-button>
-              <b-button @click="deleteProduct">Delete</b-button>
-              <b-button to="../" append>Back</b-button>
-            </b-form>
+            <template v-slot:footer>
+              <div class="d-flex justify-content-between">
+                <span>
+                  <b-button to="../" append>Cancel</b-button>
+                </span>
 
-          </div>
+                <span>
+                  <b-button @click="updateProduct(form)">Save</b-button>
+                </span>
+              </div>
+            </template>
+          </b-card>
+
+        </b-container>
       </template>
     </status-container>
-
 
 
   </b-container>
 </template>
 
 <script>
-  import StatusContainer from '../StatusContainer';
+  import StatusContainer from '../Shared/StatusContainer';
 
   export default {
     name: 'ProductDetails',
@@ -111,7 +138,7 @@
       updateProduct(product) {
         this.$store.dispatch('putProduct', product);
       },
-      deleteProduct(){
+      deleteProduct() {
         this.$store.dispatch('deleteProduct', this.$props.id)
       }
     },
@@ -138,5 +165,13 @@
 </script>
 
 <style scoped>
+  .name_input {
+    max-width: 400px;
+  }
+
+  .text-width {
+    max-width: 400px;
+  }
+
 
 </style>

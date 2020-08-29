@@ -3,19 +3,13 @@ import {baseUrl} from '../../utils/pathes';
 import {router} from '../../main';
 import {removeFalsyValues} from '../../utils/pathes';
 
-function timeout(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+// function timeout(ms) {
+//   return new Promise(resolve => setTimeout(resolve, ms));
+// }
 
 const products = {
   state: {
-    productsList: [
-      {
-        id: 'product-id-1',
-        title: 'Product 1 title',
-        description: 'Product 1 description',
-      },
-    ],
+    productsList: [],
     selectedProduct: null,
     status: {
       loading: false,
@@ -29,7 +23,10 @@ const products = {
     currentPage: null,
     sortField: null,
     sortDirection: null,
-    qRequest: null,
+    searchRequest: null,
+    deleteProductModal: null,
+    modalState: false,
+    cardStyle: false,
   },
   getters: {
     'GET_PRODUCTS_LIST': state => {
@@ -56,8 +53,17 @@ const products = {
     GET_SORT_DIRECTION: state => {
       return state.sortDirection;
     },
-    GET_Q_REQUEST: state => {
-      return state.qRequest;
+    GET_SEARCH_REQUEST: state => {
+      return state.searchRequest;
+    },
+    GET_DELETE_PRODUCT: state => {
+      return state.deleteProductModal;
+    },
+    GET_MODAL_STATE: state => {
+      return state.modalState;
+    },
+    GET_CARD_STYLE: state =>{
+      return state.cardStyle;
     },
   },
   mutations: {
@@ -68,7 +74,6 @@ const products = {
       state.selectedProduct = payload;
     },
     SET_LOADING: (state) => {
-      // console.log('##', 1);
       state.status = {
         loading: true,
         loaded: false,
@@ -77,8 +82,6 @@ const products = {
       };
     },
     SET_LOADED: (state) => {
-      // console.log('##', 2);
-
       state.status = {
         loading: false,
         loaded: true,
@@ -87,8 +90,6 @@ const products = {
       };
     },
     SET_ERROR: (state, error) => {
-      // console.log(3);
-
       state.status = {
         loading: false,
         loaded: false,
@@ -111,8 +112,17 @@ const products = {
     SET_SORT_DIRECTION: (state, payload) => {
       state.sortDirection = payload;
     },
-    SET_Q_REQUEST: (state, payload) => {
-      state.qRequest = payload;
+    SET_SEARCH_REQUEST: (state, payload) => {
+      state.searchRequest = payload;
+    },
+    SET_DELETE_PRODUCT: (state, payload) => {
+      state.deleteProductModal = payload;
+    },
+    SET_MODAL_STATE: (state, payload) => {
+      state.modalState = payload;
+    },
+    SET_CARD_STYLE: (state, payload) => {
+      state.cardStyle = payload;
     },
   },
   actions: {
@@ -121,17 +131,18 @@ const products = {
       try {
 
         const params = removeFalsyValues({
-          offset: ((context.getters.GET_PAGE - 1) * context.getters.GET_LIMITS),
+          offset: ((context.getters.GET_PAGE - 1) * (context.getters.GET_LIMITS || 5)),
           limit: context.getters.GET_LIMITS,
           sort_field: context.getters.GET_SORT_FIELD,
           sort: context.getters.GET_SORT_DIRECTION,
-          q: context.getters.GET_Q_REQUEST
+          q: context.getters.GET_SEARCH_REQUEST,
         });
 
-        const {data} = await Axios.get(`${baseUrl}products`, { params });
+        const {data} = await Axios.get(`${baseUrl}products`, {params});
 
         context.commit('SAVE_PRODUCTS', data.rows);
         context.commit('SET_ROWS_NUMBER', data.count);
+
         context.commit('SET_LOADED');
       } catch (e) {
         context.commit('SET_ERROR', e);
@@ -139,7 +150,6 @@ const products = {
     },
     getProduct: async (context, payload) => {
       context.commit('SET_LOADING');
-
       try {
         const product = await Axios.get(`${baseUrl}products/${payload}`);
         context.commit('SAVE_PRODUCT', product.data);
@@ -153,7 +163,7 @@ const products = {
 
 
       try {
-        const newProduct = await Axios.post(`${baseUrl}products`, payload);
+        await Axios.post(`${baseUrl}products`, payload);
         context.commit('SET_LOADED');
         await router.push('./');
       } catch (e) {
@@ -164,7 +174,7 @@ const products = {
       context.commit('SET_LOADING');
 
       try {
-        const editedProduct = await Axios.put(`${baseUrl}products/${payload.id}`, payload);
+        await Axios.put(`${baseUrl}products/${payload.id}`, payload);
         context.commit('SET_LOADED');
         await router.push('./');
       } catch (e) {
@@ -174,13 +184,13 @@ const products = {
     deleteProduct: async (context, payload) => {
       context.commit('SET_LOADING');
       try {
-        const productDeleted = await Axios.delete(`${baseUrl}products/${payload}`)
+        await Axios.delete(`${baseUrl}products/${payload}`);
         context.commit('SET_LOADED');
-        await router.push('./');
+        context.dispatch('getProducts');
       } catch (e) {
         context.commit('SET_ERROR', e);
       }
-    }
+    },
   },
 };
 

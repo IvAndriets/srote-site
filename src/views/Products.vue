@@ -4,6 +4,7 @@
       <side-bar></side-bar>
     </b-col>
     <b-col cols="10" class="main-container-height">
+
       <router-view></router-view>
     </b-col>
   </b-row>

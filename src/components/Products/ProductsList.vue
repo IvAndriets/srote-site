@@ -1,15 +1,35 @@
 <template>
   <page-declarator-component>
-    <template v-slot:header><h3>Products List</h3></template>
+    <template v-slot:breadcrumb>
+      something
+    </template>
+
+    <template v-slot:header>
+      <h3>Products List</h3>
+    </template>
 
     <template v-slot:filter>
+      <delete-modal></delete-modal>
       <filter-products></filter-products>
     </template>
 
     <template v-slot:toolbar>
-      <b-container class="d-flex justify-content-end">
+      <b-container class="d-flex justify-content-end align-content-center">
+        <span class="pr-1">
+          <b-button :disabled="!CARD_STATUS"
+                    @click="changePageStyle">
+            <b-icon icon="list"></b-icon>
+          </b-button>
+        </span>
+        <span class="pr-1">
+        <b-button :disabled="CARD_STATUS"
+                  @click="changePageStyle">
+          <b-icon icon="grid3x3-gap"></b-icon>
+        </b-button>
+        </span>
         <b-button variant="primary"
-                  to="./add" append>
+                  to="./add"
+                  append>
           Create
           <b-icon icon="plus"></b-icon>
         </b-button>
@@ -17,64 +37,25 @@
     </template>
 
     <template v-slot:paginationInfo>
-      <product-list-action-bar class="pt-1 pb-1"></product-list-action-bar>
+      <product-list-action-bar></product-list-action-bar>
     </template>
 
+
     <template v-slot:body>
-      <b-table-simple hover
-                      outlined>
-        <b-thead>
-          <b-tr>
-            <b-th>
-              <div class="table-column d-inline-flex"
-                   @click="sortColumn('title')">
-                <span>Title</span>
-                <span v-if="SORT_FIELD === 'title'">
-                <b-icon v-if="SORT_DIRECTION === 'asc'"
-                        icon="arrow-up"></b-icon>
-                <b-icon v-else
-                        icon="arrow-down"></b-icon>
-              </span>
-              </div>
-            </b-th>
-            <b-th @click="sortColumn('description')"
-                  class="table-column">
-              Description
-              <span v-if="SORT_FIELD === 'description'">
-                <b-icon v-if="SORT_DIRECTION === 'asc'"
-                        icon="arrow-up"></b-icon>
-                <b-icon v-else
-                        icon="arrow-down"></b-icon>
-              </span>
-            </b-th>
-            <b-th></b-th>
-          </b-tr>
-        </b-thead>
-        <b-tbody v-for="product in PRODUCTS"
-                 :key="product.id">
-          <b-tr>
-            <b-td>
-              <router-link :to="{path:`./${product.id}`}"
-                           append>
-                {{product.title}}
-              </router-link>
-            </b-td>
-            <b-td>
-              {{product.description}}
-            </b-td>
-            <b-td class="d-flex justify-content-end">
-              <b-button variant="danger">Delete</b-button>
-            </b-td>
-          </b-tr>
-        </b-tbody>
-      </b-table-simple>
+      <status-container :status="{STATUS, name:'List'}">
+        <template v-slot:rendered>
+          <TableComponent>
+
+          </TableComponent>
+        </template>
+      </status-container>
     </template>
 
     <template v-slot:pagination>
       <b-pagination :value="PAGE || 1"
                     :total-rows="GET_ROWS_COUNT"
                     :per-page="LIMITS || 5"
-                    v-on:change="pageChange">
+                    @change="pageChange">
       </b-pagination>
     </template>
 
@@ -83,130 +64,153 @@
 </template>
 
 <script>
-  import PageDeclaratorComponent from '../PageDeclaratorComponent';
+  import PageDeclaratorComponent from '../Shared/PageTemplateComponent';
+  import StatusContainer from '../Shared/StatusContainer';
   import ProductsFilter from './components/Filter/ProductsFilter';
   import ProductListActionBar from './components/ProductsAcrionBar/ProductsListActionBar';
   import {removeFalsyValues} from '../../utils/pathes';
+  import DeleteModal from './components/DeleteProductModal/DeleteModal';
+  import TableComponent from './components/Table/TableComponent';
+
 
   export default {
     name: 'ProductsList',
+    components: {
+      TableComponent,
+      StatusContainer,
+      PageDeclaratorComponent,
+      'filter-products': ProductsFilter,
+      'product-list-action-bar': ProductListActionBar,
+      'delete-modal': DeleteModal,
+    },
     data: () => ({
       productsList: [],
       totalRows: 0,
+      items:[],
     }),
     computed: {
       PRODUCTS: {
         get() {
           return this.$store.getters.GET_PRODUCTS_LIST;
-        }
+        },
       },
       GET_ROWS_COUNT: {
         get() {
           return this.$store.getters.GET_ROWS_COUNT;
-        }
+        },
       },
       STATUS: {
         get() {
           return this.$store.getters.GET_STATUS;
-        }
+        },
       },
       PAGE: {
         get() {
           return this.$store.getters.GET_PAGE;
         }, set(value) {
           this.$store.commit('SET_PAGE', value);
-        }
+        },
       },
       LIMITS: {
         get() {
           return this.$store.getters.GET_LIMITS;
+        }, set(value) {
+          this.$store.commit('SET_LIMIT', value);
         },
       },
       SORT_FIELD: {
         get() {
           return this.$store.getters.GET_SORT_FIELD;
         }, set(payload) {
-          this.$store.commit('SET_SORT_FIELD', payload)
-        }
+          this.$store.commit('SET_SORT_FIELD', payload);
+        },
       },
       SORT_DIRECTION: {
         get() {
           return this.$store.getters.GET_SORT_DIRECTION;
         }, set(payload) {
-          this.$store.commit('SET_SORT_DIRECTION', payload)
+          this.$store.commit('SET_SORT_DIRECTION', payload);
         },
-        Q_REQUEST: {
-          get() {
-            return this.$store.getters.GET_Q_REQUEST;
-          }
-        }
-      }
-    },
-    components: {
-      PageDeclaratorComponent,
-      'filter-products': ProductsFilter,
-      'product-list-action-bar': ProductListActionBar,
-    },
-    mounted() {
-      const page = this.$route.query.page;
-
-      this.PAGE = page;
-      this.Q_REQUEST = this.$route.query.q;
-      this.SORT_FIELD = this.$route.query.sortField;
-      this.SORT_DIRECTION = this.$route.query.sort;
-      this.$store.commit('SET_LIMIT', this.$route.query.limit ? +this.$route.query.limit : null);
-
-      setTimeout(() => {
-        this.PAGE = page;
-      }, 500);
-
-      this.$store.dispatch('getProducts');
-    },
-    methods: {
-      pageChange(page) {
-        this.PAGE = page;
-
-        this.$store.dispatch('getProducts');
-
-        const queryValues = removeFalsyValues({
-          page: this.PAGE,
-          limit: this.LIMITS,
-          sortField: this.SORT_FIELD,
-          sort: this.SORT_DIRECTION,
-          q: this.Q_REQUEST,
-        });
-
-        this.$router.replace({query: {...queryValues}}).catch(() => {
-        });
       },
-      sortColumn(column) {
-        this.SORT_FIELD = column;
-
-        this.SORT_DIRECTION = this.SORT_DIRECTION === 'asc' ? 'desc' : 'asc';
-
-        this.pageChange(this.PAGE);
+      SEARCH_REQUEST: {
+        get() {
+          return this.$store.getters.GET_SEARCH_REQUEST;
+        }, set(value) {
+          this.$store.commit('SET_SEARCH_REQUEST', value);
+        },
       },
-
+      DELETE_ID: {
+        get() {
+          return this.$store.getters.GET_DELETE_PRODUCT;
+        }, set(value) {
+          this.$store.commit('SET_DELETE_PRODUCT', value);
+        },
+      },
+      MODAL_STATE: {
+        get() {
+          return this.$store.getters.GET_MODAL_STATE;
+        }, set(value) {
+          this.$store.commit('SET_MODAL_STATE', value);
+        },
+      },
+      CARD_STATUS: {
+        get() {
+          return this.$store.getters.GET_CARD_STYLE;
+        }, set(value) {
+          this.$store.commit('SET_CARD_STYLE', value);
+        },
+      },
     },
     watch: {
       LIMITS(newValue) {
         if (newValue && newValue !== (this.$route.query.limit ? +this.$route.query.limit : null)) {
-          this.PAGE = 1;
-          this.pageChange(this.PAGE);
+          this.$router.push({query: {...this.$route.query, page: '1', limit: newValue}}).catch(() => {
+          });
         }
       },
-      Q_REQUEST(newValue) {
-        if (newValue !== this.$route.query.q) {
-          this.PAGE = 1;
-          this.pageChange(this.PAGE);
-        }
-      }
+      $route(to) {
+        this.execute(to.query);
+      },
+    },
+    mounted() {
+      const query = this.execute(this.$route.query);
+
+      setTimeout(() => {
+        this.PAGE = query.page ? `${query.page}` : 1;
+      }, 500);
+    },
+    methods: {
+      pageChange(page) {
+        this.$router.push({query: {...this.$route.query, page}}).catch(() => {
+        });
+      },
+      execute(queryParams) {
+        const query = removeFalsyValues({
+          page: queryParams.page ? +queryParams.page : null,
+          limit: queryParams.limit ? +queryParams.limit : null,
+          sortField: queryParams.sortField,
+          sort: queryParams.sort,
+          q: queryParams.q,
+        });
+
+        this.PAGE = query.page;
+        this.SEARCH_REQUEST = query.q;
+        this.SORT_FIELD = query.sortField;
+        this.SORT_DIRECTION = query.sort;
+        this.LIMITS = query.limit ? +query.limit : null;
+
+        this.$store.dispatch('getProducts');
+
+        return query;
+      },
+
+      changePageStyle() {
+        this.CARD_STATUS = !this.CARD_STATUS;
+      },
     },
   };
 </script>
 
 <style scoped>
-  .table-column {
-    cursor: pointer;
-  }
+
 </style>
