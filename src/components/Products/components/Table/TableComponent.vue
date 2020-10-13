@@ -75,6 +75,18 @@
               </span>
               </div>
             </b-th>
+            <b-th>
+              <div class="table-column d-inline-flex"
+                   @click="sortColumn('category_id')">
+                <span>Category</span>
+                <span v-if="SORT_FIELD === 'description'">
+                <b-icon v-if="SORT_DIRECTION === 'asc'"
+                        icon="arrow-up"></b-icon>
+                <b-icon v-else
+                        icon="arrow-down"></b-icon>
+              </span>
+              </div>
+            </b-th>
             <b-th></b-th>
           </b-tr>
         </b-thead>
@@ -92,6 +104,13 @@
             </b-td>
             <b-td>
               {{ product.description }}
+            </b-td>
+            <b-td>
+<!--              {{ CATEGORIES.find(-->
+<!--              function category(currentValue) {-->
+<!--              console.log(currentValue);-->
+<!--              return currentValue === product.category_id;-->
+<!--              }) }}-->
             </b-td>
             <b-td>
               <div class="d-flex justify-content-end">
@@ -112,7 +131,7 @@
 <script>
   export default {
     name: 'TableComponent',
-    computed:{
+    computed: {
       CARD_STATUS: {
         get() {
           return this.$store.getters.GET_CARD_STYLE;
@@ -153,8 +172,13 @@
           this.$store.commit('SET_MODAL_STATE', value);
         },
       },
+      CATEGORIES: {
+        get() {
+          return this.$store.getters.GET_CATEGORIES;
+        },
+      },
     },
-    methods:{
+    methods: {
       showDeleteModal(productId) {
         this.DELETE_ID = productId;
         this.MODAL_STATE = true;

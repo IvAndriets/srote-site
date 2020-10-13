@@ -1,5 +1,6 @@
 <template>
-  <b-container fluid="fluid" class="bg-light side-bar-height">
+  <b-container fluid="fluid"
+               class="bg-light side-bar-height">
     <div>
       <ul class="nav">
         <li class="nav-item">
@@ -7,6 +8,11 @@
                        to="/products">
             <b-icon icon="folder2"></b-icon>
             Products
+          </router-link>
+          <router-link class="nav-link active"
+                       to="/categories">
+            <b-icon icon="folder2"></b-icon>
+            Categories
           </router-link>
         </li>
       </ul>
